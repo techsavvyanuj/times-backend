@@ -1,0 +1,98 @@
+{
+  "posters": [
+    {
+      "id": 1,
+      "title": "India is the 4th largest economy in the world now",
+      "image": "https://res.cloudinary.com/diuimvolk/image/upload/v1756560841/posters/nhkzsshejjt7hsym7hhp.png",
+      "link": ""
+    },
+    {
+      "id": 2,
+      "title": "Poster 2",
+      "image": "https://res.cloudinary.com/diuimvolk/image/upload/v1756210058/posters/f2ydwh3m8vbgcbxn65po.jpg",
+      "link": ""
+    },
+    {
+      "id": 3,
+      "title": "Poster 3",
+      "image": "https://res.cloudinary.com/diuimvolk/image/upload/v1756210466/posters/zwjj9h2d4bacspkj0zj7.jpg",
+      "link": ""
+    }
+  ],
+  "breakingNews": [
+    {
+      "id": 1756627114656,
+      "headline": "test",
+      "shortDescription": "test 1",
+      "fullDescription": "twst full",
+      "state": "Arunachal Pradesh",
+      "videoUrl": "https://res.cloudinary.com/diuimvolk/video/upload/v1756627112/breaking-news/p6midcjxmphla3xnc7dz.mp4",
+      "thumbnail": "https://res.cloudinary.com/diuimvolk/image/upload/v1756627114/breaking-news-thumbnails/ddx8jbjawjanykxvozx4.jpg",
+      "youtubeUrl": "https://youtu.be/jmpUP1MaQ9Q?si=jPOxk7pxAj0dZLVn",
+      "timestamp": "2025-08-31T07:58:34.656Z"
+    },
+    {
+      "id": 1756626542521,
+      "headline": "news for testing",
+      "shortDescription": "During PM Modi’s visit to Japan, the two countries firmed up 13 key agreements and declarations and announced the launch of several key initiatives",
+      "fullDescription": "asd",
+      "state": "Kerala",
+      "videoUrl": "https://res.cloudinary.com/diuimvolk/video/upload/v1756626539/breaking-news/bbomu0jagxd6tau13ecs.mp4",
+      "thumbnail": "https://res.cloudinary.com/diuimvolk/image/upload/v1756626542/breaking-news-thumbnails/pbum8npsthgqh35724in.png",
+      "youtubeUrl": "https://youtu.be/jmpUP1MaQ9Q?si=jPOxk7pxAj0dZLVn",
+      "timestamp": "2025-08-31T07:49:02.521Z"
+    },
+    {
+      "id": 1756624062106,
+      "headline": "news for testing",
+      "shortDescription": "testing descripton",
+      "fullDescription": "as of now test",
+      "state": "Kerala",
+      "videoUrl": "",
+      "youtubeUrl": "https://youtu.be/jmpUP1MaQ9Q?si=jPOxk7pxAj0dZLVn",
+      "timestamp": "2025-08-31T07:07:42.106Z"
+    },
+    {
+      "id": 1756561875170,
+      "headline": "PM Modi arrives in China’s Tianjin ahead of SCO summit | LIVE",
+      "shortDescription": "During PM Modi’s visit to Japan, the two countries firmed up 13 key agreements and declarations and announced the launch of several key initiatives",
+      "fullDescription": "nnw wdewsdgrwd",
+      "state": "Delhi",
+      "videoUrl": "",
+      "timestamp": "2025-08-30T13:51:15.170Z"
+    },
+    {
+      "id": 1756561390804,
+      "headline": "PM Modi arrives in China’s Tianjin ahead of SCO summit | LIVE",
+      "shortDescription": "During PM Modi’s visit to Japan, the two countries firmed up 13 key agreements and declarations and announced the launch of several key initiatives",
+      "fullDescription": "Prime Minister Narendra Modi on Saturday (August 30, 2025) arrived in China to attend the SCO summit after wrapping up a two-day visit to Japan. Prime Minister Narendra Modi on Saturday (August 30, 2025) travelled to Sendai in the Japanese prefecture of Miyagi to visit a semiconductor plant. \r\n\r\nThe Prime Minister urged Japanese governors and Indian state governments to forge stronger collaborations in manufacturing, mobility, next-generation infrastructure, innovation, start-ups and small businesses. During his two-day visit to China, Mr. Modi will attend the annual summit of the Shanghai Cooperation Organisation (SCO) in Tianjin on August 31 and September 1.\r\n\r\nThe summit of the 10-member bloc is regarded as significant and most consequential from the point of view of India-China relations in the current context of a sudden downturn in India-U.S. ties after Mr. Trump imposed 50% tariffs on Indian exports.",
+      "state": "Delhi",
+      "videoUrl": "https://res.cloudinary.com/diuimvolk/video/upload/v1756561388/breaking-news/gqc6ui8ei1jvtk8al0ge.mp4",
+      "timestamp": "2025-08-30T13:43:10.804Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Delhi"
+    },
+    {
+      "id": 2,
+      "name": "Maharashtra"
+    },
+    {
+      "id": 3,
+      "name": "Uttar Pradesh"
+    }
+  ],
+  "news": [
+    {
+      "id": 1756627276201,
+      "title": "test article",
+      "content": "\r\nRussia and China have taken a common stand against \"discriminatory sanctions\" that hinder the socioeconomic development of BRICS member countries, Russian President Vladimir Putin has said.\r\n\r\n\r\nMr. Putin, who arrived in Tianjin to attend the Shanghai Cooperation (SCO) summit, made the remarks in an interview with China’s state-run Xinhua news agency.\r\n\r\nHe said that Russia and China are paying special attention to mobilising additional resources for critical infrastructure projects, and stand united in strengthening BRICS' ability to address pressing global challenges.\r\n\r\nThe Russian president said that Moscow and Beijing take a “common stand against discriminatory sanctions that hinder the socioeconomic development” of BRICS members and the world at large.\r\n\r\nMr. Putin's remarks came in the backdrop of U.S. President Donald Trump threatening the member countries of BRICS with 10% tariffs.\r\n\r\nBRICS is an intergovernmental organisation comprising Brazil, Russia, India, China and South Africa. Saudi Arabia, Iran, Ethiopia, Egypt, Argentina and the United Arab Emirates have joined BRICS as its new members.\r\n\r\n\r\nPrime Minister Narendra Modi is due to meet Mr. Putin on the sidelines of the SCO summit being held here from Sunday to Monday.\r\n\r\nIn the written interview with Xinhua, Mr. Putin said Russia and China support reforming the International Monetary Fund and the World Bank.\r\n\r\nHe added that the two sides share the view that a new financial system must be built on the principles of \"openness and true equity\", which can provide equal and non-discriminatory access to its tools for all countries and reflect the real standing of member states in the global economy.",
+      "category": "Politics",
+      "imageUrl": "https://res.cloudinary.com/diuimvolk/image/upload/v1756627275/news/xbhbirq9f6quh9ach4ez.png",
+      "timestamp": "2025-08-31T08:01:16.201Z"
+    }
+  ]
+}
