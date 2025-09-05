@@ -11,7 +11,12 @@ const PORT = 4000;
 
 // Configure CORS
 app.use(cors({
-  origin: ['https://times-frontend.vercel.app', 'https://timesnowindiaadmin-main.vercel.app'],
+  origin: [
+    'https://times-frontend.vercel.app', 
+    'https://timesnowindiaadmin-main.vercel.app',
+    'http://localhost:3000', 
+    'http://localhost:3001'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -62,13 +67,29 @@ const upload = multer({
 const breakingNewsUpload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    const videoTypes = /mp4|mov|avi|wmv/;
-    const imageTypes = /jpeg|jpg|png|gif/;
+    console.log('Processing breaking news file:', file.originalname, 'MIME:', file.mimetype); // Debug log
+    
+    // Video types
+    const videoExtTypes = /mp4|mov|avi|wmv/;
+    const videoMimeTypes = /video\/(mp4|quicktime|avi|x-msvideo)/;
+    
+    // Image types  
+    const imageExtTypes = /jpeg|jpg|png|gif|webp/;
+    const imageMimeTypes = /image\/(jpeg|jpg|png|gif|webp)/;
+    
     const ext = path.extname(file.originalname).toLowerCase();
-    if (videoTypes.test(ext) || imageTypes.test(ext)) {
+    
+    // Check if it's a valid video file
+    const isValidVideo = videoExtTypes.test(ext) && videoMimeTypes.test(file.mimetype);
+    
+    // Check if it's a valid image file
+    const isValidImage = imageExtTypes.test(ext) && imageMimeTypes.test(file.mimetype);
+    
+    if (isValidVideo || isValidImage) {
       return cb(null, true);
     }
-    cb(new Error('Invalid file type. Allowed video and image formats.'));
+    
+    cb(new Error(`Invalid file type. Only video (MP4, MOV, AVI, WMV) and image (JPEG, JPG, PNG, GIF, WebP) files are allowed. Got: ${file.mimetype} with extension: ${ext}`));
   }
 });
 
@@ -79,6 +100,7 @@ function readData() {
     return {
       posters: [],
       breakingNews: [],
+      featuredStories: [],
       categories: [],
       users: [],
       media: [],
@@ -94,6 +116,26 @@ function readData() {
 
 function writeData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
+
+// --- Activity Logger ---
+function logActivity(type, title, user = 'Admin User', status = 'completed') {
+  const data = readData();
+  if (!data.activities) data.activities = [];
+  
+  const activity = {
+    id: Date.now(),
+    type,
+    title,
+    user,
+    status,
+    timestamp: new Date().toISOString()
+  };
+  
+  data.activities.unshift(activity); // Add to beginning
+  data.activities = data.activities.slice(0, 50); // Keep only last 50 activities
+  writeData(data);
+  return activity;
 }
 
 // --- Helper function to upload to Cloudinary ---
@@ -144,14 +186,20 @@ app.post('/api/auth/login', (req, res) => {
 const posterUpload = multer({ 
   storage,
   fileFilter: (req, file, cb) => {
-    console.log('Processing file:', file.originalname); // Debug log
-    const filetypes = /jpeg|jpg|png|gif/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
+    console.log('Processing file:', file.originalname, 'MIME:', file.mimetype); // Debug log
+    
+    // Support modern image formats
+    const imageExtTypes = /jpeg|jpg|png|gif|webp|avif/;
+    const imageMimeTypes = /image\/(jpeg|jpg|png|gif|webp|avif)/;
+    
+    const ext = path.extname(file.originalname).toLowerCase();
+    const extname = imageExtTypes.test(ext);
+    const mimetype = imageMimeTypes.test(file.mimetype);
+    
     if (extname && mimetype) {
       return cb(null, true);
     }
-    cb(new Error(`Invalid file type. Only JPEG, JPG, PNG, and GIF are allowed. Got: ${file.mimetype}`));
+    cb(new Error(`Invalid file type. Only JPEG, JPG, PNG, GIF, WebP, and AVIF are allowed. Got: ${file.mimetype} with extension: ${ext}`));
   }
 });
 
@@ -377,6 +425,139 @@ app.delete('/api/breaking-news/:id', (req, res) => {
   }
 });
 
+// --- Featured Stories Endpoints ---
+// Get all featured stories
+app.get('/api/featured-stories', (req, res) => {
+  try {
+    const data = readData();
+    res.json(data.featuredStories || []);
+  } catch (error) {
+    console.error('Failed to fetch featured stories:', error);
+    res.status(500).json({ error: 'Failed to fetch featured stories' });
+  }
+});
+
+// Create featured story
+app.post('/api/featured-stories', posterUpload.single('image'), async (req, res) => {
+  try {
+    console.log('Received featured story POST request');
+    console.log('Body:', req.body);
+    console.log('File:', req.file);
+    
+    const { title, description, content, category, state, excerpt, priority } = req.body;
+    
+    let imageUrl = '';
+    // Handle image upload
+    if (req.file) {
+      try {
+        imageUrl = await uploadToCloudinary(req.file, 'featured-stories');
+      } catch (err) {
+        console.error('Error uploading featured story image:', err);
+        return res.status(500).json({ error: 'Failed to upload image', details: err.message });
+      }
+    }
+
+    const data = readData();
+    const newStory = {
+      id: Date.now(),
+      title,
+      description,
+      content: content || description,
+      category,
+      state,
+      excerpt: excerpt || description,
+      imageUrl,
+      priority: priority ? Number(priority) : 1,
+      views: '0',
+      timestamp: new Date().toISOString()
+    };
+
+    if (!data.featuredStories) data.featuredStories = [];
+    data.featuredStories.push(newStory);
+    writeData(data);
+    
+    // Log activity
+    logActivity('featured-story', `New featured story published: "${title.substring(0, 50)}${title.length > 50 ? '...' : ''}"`, 'Admin User', 'published');
+    
+    res.status(201).json(newStory);
+  } catch (error) {
+    console.error('Failed to create featured story:', error);
+    res.status(500).json({ error: 'Failed to create featured story', details: error.message });
+  }
+});
+
+// Update featured story
+app.put('/api/featured-stories/:id', posterUpload.single('image'), async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { title, description, content, category, state, excerpt, priority } = req.body;
+    
+    const data = readData();
+    const storyIdx = data.featuredStories.findIndex(s => s.id === id);
+    if (storyIdx === -1) return res.status(404).json({ error: 'Featured story not found' });
+
+    let imageUrl = data.featuredStories[storyIdx].imageUrl;
+    
+    // Handle image upload
+    if (req.file) {
+      try {
+        imageUrl = await uploadToCloudinary(req.file, 'featured-stories');
+      } catch (err) {
+        console.error('Error uploading featured story image:', err);
+        return res.status(500).json({ error: 'Failed to upload image', details: err.message });
+      }
+    }
+
+    // Update the story
+    data.featuredStories[storyIdx] = {
+      ...data.featuredStories[storyIdx],
+      title,
+      description,
+      content: content || description,
+      category,
+      state,
+      excerpt: excerpt || description,
+      imageUrl,
+      priority: priority ? Number(priority) : data.featuredStories[storyIdx].priority,
+      timestamp: new Date().toISOString()
+    };
+
+    writeData(data);
+    
+    // Log activity
+    logActivity('featured-story', `Featured story updated: "${title.substring(0, 50)}${title.length > 50 ? '...' : ''}"`, 'Admin User', 'updated');
+    
+    res.json(data.featuredStories[storyIdx]);
+  } catch (error) {
+    console.error('Failed to update featured story:', error);
+    res.status(500).json({ error: 'Failed to update featured story', details: error.message });
+  }
+});
+
+// Delete featured story
+app.delete('/api/featured-stories/:id', (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const data = readData();
+    if (!data.featuredStories) data.featuredStories = [];
+    
+    const idx = data.featuredStories.findIndex(s => s.id === id);
+    if (idx === -1) return res.status(404).json({ error: 'Featured story not found' });
+    
+    const deletedStory = data.featuredStories[idx];
+    data.featuredStories.splice(idx, 1);
+    writeData(data);
+    
+    // Log activity
+    logActivity('featured-story', `Featured story deleted: "${deletedStory.title.substring(0, 50)}${deletedStory.title.length > 50 ? '...' : ''}"`, 'Admin User', 'deleted');
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Failed to delete featured story:', error);
+    res.status(500).json({ error: 'Failed to delete featured story' });
+  }
+});
+
 // --- Category Management Endpoints ---
 app.get('/api/categories', (req, res) => {
   const data = readData();
@@ -424,6 +605,12 @@ app.post('/api/media', posterUpload.single('file'), async (req, res) => {
   }
 });
 
+// --- Activity Endpoints ---
+app.get('/api/activities', (req, res) => {
+  const data = readData();
+  res.json(data.activities || []);
+});
+
 // --- News Management Endpoints ---
 app.get('/api/news', (req, res) => {
   const data = readData();
@@ -453,6 +640,10 @@ app.post('/api/news', posterUpload.single('image'), async (req, res) => {
 
     data.news.push(newNews);
     writeData(data);
+    
+    // Log activity
+    logActivity('news', `New article published: "${title.substring(0, 50)}${title.length > 50 ? '...' : ''}"`, 'Admin User', 'published');
+    
     res.json(newNews);
   } catch (error) {
     res.status(500).json({ error: 'Failed to add news' });
@@ -484,6 +675,10 @@ app.put('/api/news/:id', posterUpload.single('image'), async (req, res) => {
     };
 
     writeData(data);
+    
+    // Log activity
+    logActivity('news', `Article updated: "${data.news[idx].title.substring(0, 50)}${data.news[idx].title.length > 50 ? '...' : ''}"`, 'Admin User', 'updated');
+    
     res.json(data.news[idx]);
   } catch (error) {
     console.error('Failed to update news:', error);
@@ -498,8 +693,14 @@ app.delete('/api/news/:id', (req, res) => {
     const data = readData();
     const idx = data.news.findIndex(n => n.id === newsId);
     if (idx === -1) return res.status(404).json({ error: 'News not found' });
+    
+    const deletedNews = data.news[idx];
     data.news.splice(idx, 1);
     writeData(data);
+    
+    // Log activity
+    logActivity('news', `Article deleted: "${deletedNews.title.substring(0, 50)}${deletedNews.title.length > 50 ? '...' : ''}"`, 'Admin User', 'deleted');
+    
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete news' });
