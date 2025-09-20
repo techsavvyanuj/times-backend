@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "pm2:start": "pm2 start index.js --name times-backend",
+    "pm2:stop": "pm2 stop times-backend",
+    "pm2:restart": "pm2 restart times-backend"
   },
   "dependencies": {
     "body-parser": "^1.20.2",

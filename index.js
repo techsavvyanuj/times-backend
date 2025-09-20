@@ -7,15 +7,12 @@ import path from 'path';
 import cloudinary from './cloudinaryConfig.js';
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 // Configure CORS
 app.use(cors({
   origin: [
-    'https://times-frontend.vercel.app', 
-    'https://timesnowindiaadmin-main.vercel.app',
-    'http://localhost:3000', 
-    'http://localhost:3001'
+    'https://www.timesnowindia24.live'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -27,6 +24,15 @@ app.use('/uploads', express.static('uploads'));
 // Add a test endpoint to verify CORS
 app.get('/api/test', (req, res) => {
   res.json({ message: 'CORS is working' })
+});
+
+// Health check endpoint for AWS
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 // Configure multer for video uploads

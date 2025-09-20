@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local uploads (we're using Cloudinary)
+uploads/
+
+# macOS
+.DS_Store
+
+# AWS
+.aws/
+
+# Other
+.ebignore
+.ebextensions/
