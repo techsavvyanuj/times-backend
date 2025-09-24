@@ -12,7 +12,8 @@ const PORT = process.env.PORT || 4000;
 // Configure CORS
 app.use(cors({
   origin: [
-    'https://www.timesnowindia24.live'
+    'https://www.timesnowindia24.live',
+    'https://timesnowindiaadmin-main.vercel.app'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
