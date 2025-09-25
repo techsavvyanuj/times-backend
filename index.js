@@ -297,7 +297,7 @@ app.post('/api/breaking-news', breakingNewsUpload.any(), async (req, res) => {
       console.log('Received breaking-news POST request');
       console.log('Body:', req.body);
       console.log('Files:', req.files);
-      const { headline, shortDescription, fullDescription, state, youtubeUrl } = req.body;
+      const { headline, shortDescription, fullDescription, category, state, youtubeUrl } = req.body;
       const data = readData();
       
      const filesArray = req.files || [];
@@ -333,6 +333,7 @@ app.post('/api/breaking-news', breakingNewsUpload.any(), async (req, res) => {
         headline,
         shortDescription,
         fullDescription,
+        category,
         state,
         videoUrl,
         thumbnail: thumbnailUrl || '',
@@ -361,7 +362,7 @@ app.put('/api/breaking-news/:id', breakingNewsUpload.any(), async (req, res) => 
     console.log('Body:', req.body);
     console.log('Files:', req.files);
 
-    const { headline, shortDescription, fullDescription, state, youtubeUrl } = req.body;
+    const { headline, shortDescription, fullDescription, category, state, youtubeUrl } = req.body;
 
     // map files by fieldname
     const filesArray = req.files || [];
@@ -401,6 +402,7 @@ app.put('/api/breaking-news/:id', breakingNewsUpload.any(), async (req, res) => 
       headline: headline !== undefined ? headline : existing.headline,
       shortDescription: shortDescription !== undefined ? shortDescription : existing.shortDescription,
       fullDescription: fullDescription !== undefined ? fullDescription : existing.fullDescription,
+      category: category !== undefined ? category : existing.category,
       state: state !== undefined ? state : existing.state,
       youtubeUrl: youtubeUrl !== undefined ? youtubeUrl : existing.youtubeUrl,
       videoUrl,
@@ -429,6 +431,21 @@ app.delete('/api/breaking-news/:id', (req, res) => {
   } catch (error) {
     console.error('Failed to delete breaking news:', error);
     res.status(500).json({ error: 'Failed to delete breaking news' });
+  }
+});
+
+// Get breaking news by category
+app.get('/api/breaking-news/category/:category', (req, res) => {
+  try {
+    const { category } = req.params;
+    const data = readData();
+    const filteredNews = data.breakingNews.filter(news => 
+      news.category && news.category.toLowerCase() === category.toLowerCase()
+    );
+    res.json(filteredNews);
+  } catch (error) {
+    console.error('Failed to fetch breaking news by category:', error);
+    res.status(500).json({ error: 'Failed to fetch breaking news by category' });
   }
 });
 
@@ -562,6 +579,54 @@ app.delete('/api/featured-stories/:id', (req, res) => {
   } catch (error) {
     console.error('Failed to delete featured story:', error);
     res.status(500).json({ error: 'Failed to delete featured story' });
+  }
+});
+
+// Get featured stories by category
+app.get('/api/featured-stories/category/:category', (req, res) => {
+  try {
+    const { category } = req.params;
+    const data = readData();
+    const filteredStories = (data.featuredStories || []).filter(story => 
+      story.category && story.category.toLowerCase() === category.toLowerCase()
+    );
+    res.json(filteredStories);
+  } catch (error) {
+    console.error('Failed to fetch featured stories by category:', error);
+    res.status(500).json({ error: 'Failed to fetch featured stories by category' });
+  }
+});
+
+// Get all content by category (breaking news + featured stories + regular news)
+app.get('/api/category/:category', (req, res) => {
+  try {
+    const { category } = req.params;
+    const data = readData();
+    
+    // Filter breaking news by category
+    const breakingNews = (data.breakingNews || []).filter(news => 
+      news.category && news.category.toLowerCase() === category.toLowerCase()
+    );
+    
+    // Filter featured stories by category
+    const featuredStories = (data.featuredStories || []).filter(story => 
+      story.category && story.category.toLowerCase() === category.toLowerCase()
+    );
+    
+    // Filter regular news by category
+    const regularNews = (data.news || []).filter(news => 
+      news.category && news.category.toLowerCase() === category.toLowerCase()
+    );
+    
+    res.json({
+      breakingNews,
+      featuredStories,
+      news: regularNews,
+      category
+    });
+  } catch (error) {
+    console.error('Failed to fetch content by category:', error);
+    res.status(500).json({ error: 'Failed to fetch content by category' });
   }
 });
 
